@@ -1,1 +1,0 @@
-# extracting-using-singer-spec

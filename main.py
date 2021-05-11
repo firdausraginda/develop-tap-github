@@ -22,8 +22,7 @@ def access_config():
             config = json.load(input)
     else:
         config = {}
-        print("Missing Config file")
-        print("'-c', '--config'")
+        print("Missing config file: '-c' or '--config")
         sys.exit(1)
     
     return config['api_url'], config['username'], config['access_token']
@@ -42,10 +41,9 @@ def loop_thru_pages(endpoint, page=1):
     # loop while page content is not empty
     while len(fetch_data_from_url(endpoint, page)) > 0:
         response = fetch_data_from_url(endpoint, page)
-        if page == 1:
-            temp_result = response
-        else:
-            temp_result = temp_result + response
+
+        # ternary operator to append list if current iteration is not on the 1st page
+        temp_result = response if page == 1 else temp_result + response
         
         page += 1
 

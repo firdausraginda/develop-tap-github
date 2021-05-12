@@ -3,6 +3,7 @@ import argparse
 import sys
 import json
 from data_cleansing import clean_pipeline
+from requests.exceptions import RequestException
 
 def dump_json(json_data):
     """dump data into a json file"""
@@ -25,7 +26,7 @@ def access_config():
     else:
         config = {}
         print("Missing config file: '-c' or '--config")
-        sys.exit(1)
+        sys.exit()
     
     return config['api_url'], config['username'], config['access_token']
 
@@ -35,7 +36,14 @@ def fetch_data_from_url(endpoint, page=1):
     # get the api_url, username, & token from config.json
     api_url, auth_username, auth_token = access_config()
 
-    return requests.get(f'{api_url}/{endpoint}?page={page}', auth=(auth_username, auth_token)).json()
+    # try to request data, terminate program if failed
+    try:
+        response = requests.get(f'{api_url}/{endpoint}?page={page}', auth=(auth_username, auth_token)).json()
+    except RequestException as error:
+        print('an error occured: ', error)
+        sys.exit()
+
+    return response
 
 def loop_thru_pages(endpoint, page=1):
     """use function fetch_data_from_url() to loop thru all the pages"""
@@ -47,6 +55,7 @@ def loop_thru_pages(endpoint, page=1):
         # cleaning raw data
         cleaned_results = [clean_pipeline(row, endpoint) for row in response]
      
+        # yield the cleaned data per API page  
         for cleaned_result in cleaned_results:
             yield cleaned_result
 

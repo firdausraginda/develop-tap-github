@@ -30,32 +30,53 @@ def access_config():
     
     return config['api_url'], config['username'], config['access_token']
 
-def fetch_data_from_url(endpoint, page=1):
-    """fetch data from the given URL using pre-defined auth access"""
+def get_complete_endpoint(endpoint, endpoint_params):
+    """define the complete endpoint"""
+    
+    # emulating switch/case statement
+    return {
+        'repos': lambda: 'users/firdausraginda/repos',
+        'branch': lambda: f'repos/firdausraginda/{endpoint_params}/branches'
+    }.get(endpoint, lambda: None)()
+
+def fetch_data_exception_handling(complete_endpoint, page):
+    """error handling when fetching data"""
 
     # get the api_url, username, & token from config.json
     api_url, auth_username, auth_token = access_config()
 
-    # try to request data, terminate program if failed
+    # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{api_url}/{endpoint}?page={page}', auth=(auth_username, auth_token)).json()
+        response = requests.get(f'{api_url}/{complete_endpoint}?page={page}', auth=(auth_username, auth_token)).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()
+    
+    return response
+
+def fetch_data_from_url(endpoint, endpoint_params, page):
+    """fetch data for 1 page"""
+
+    response = fetch_data_exception_handling(get_complete_endpoint(endpoint, endpoint_params), page)
+    
+    # if endpoint == 'repos':
+    #     response = fetch_data_exception_handling(get_complete_endpoint(endpoint), page)
+    # elif endpoint == 'branch':
+    #     response = fetch_data_exception_handling(get_complete_endpoint(endpoint, repos_result['id']), page)
 
     return response
 
-def loop_thru_pages(endpoint, page=1):
+def loop_thru_pages(endpoint, endpoint_params=None, page=1):
     """use function fetch_data_from_url() to loop thru all the pages"""
 
     # loop while page content is not empty
-    while len(fetch_data_from_url(endpoint, page)) > 0:
-        response = fetch_data_from_url(endpoint, page)
+    while len(fetch_data_from_url(endpoint, endpoint_params, page)) > 0:
+        response = fetch_data_from_url(endpoint, endpoint_params, page)
 
         # cleaning raw data
-        cleaned_results = [clean_pipeline(row, endpoint) for row in response]
+        cleaned_results = [clean_pipeline(row, endpoint, endpoint_params) for row in response]
      
-        # yield the cleaned data per API page  
+        # yield the cleaned data per API page
         for cleaned_result in cleaned_results:
             yield cleaned_result
 

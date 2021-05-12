@@ -34,10 +34,8 @@ schema = {
 # write schema
 singer.write_schema('repository', schema, ['id', 'owner_id'])
 
-endpoint = 'users/firdausraginda/repos'
-
 # write records
-for result_data in loop_thru_pages(endpoint):
+for result_data in loop_thru_pages('repos'):
     singer.write_records('repository', [
         {
             'id': result_data['id'],

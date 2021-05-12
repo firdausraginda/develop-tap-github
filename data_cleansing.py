@@ -11,16 +11,16 @@ def handle_empty_string(item):
     string_converted = str(item)
     return None if len(string_converted.strip()) == 0 else string_converted.strip()
 
-def clean_pipeline(raw_data, endpoint):
+def clean_pipeline(raw_data, endpoint, endpoint_params):
     """select function based on data endpoint"""
 
     # emulating switch/case statement
     return {
-        'users/firdausraginda/repos': clean_repo,
+        'repos': clean_repo,
         'branch': clean_branch
-    }.get(endpoint, lambda: None)(raw_data)
+    }.get(endpoint, lambda: None)(raw_data, endpoint_params)
 
-def clean_repo(raw_data):
+def clean_repo(raw_data, endpoint_params):
     """clean repository data"""
 
     cleaned_dict = {}
@@ -52,11 +52,12 @@ def clean_repo(raw_data):
 
     return cleaned_dict
 
-def clean_branch(raw_data):
+def clean_branch(raw_data, endpoint_params):
     """clean branch data"""
 
     cleaned_dict = {}
-    cleaned_dict['id'] = raw_data['id']
+    cleaned_dict['branch_name'] = handle_empty_string(raw_data['name'])
+    cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
 
     return cleaned_dict
 

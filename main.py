@@ -2,6 +2,7 @@ import requests
 import argparse
 import sys
 import json
+from data_cleansing import clean_pipeline
 
 def dump_json(json_data):
     """dump data into a json file"""
@@ -9,6 +10,7 @@ def dump_json(json_data):
     with open('dummy.json', 'w') as outfile:
         json.dump(json_data, outfile)
 
+    return None
 
 def access_config():
     """retrieve the config items from config.json"""
@@ -42,25 +44,26 @@ def loop_thru_pages(endpoint, page=1):
     while len(fetch_data_from_url(endpoint, page)) > 0:
         response = fetch_data_from_url(endpoint, page)
 
+        # cleaning raw data
+        cleaned_results = [clean_pipeline(row, endpoint) for row in response]
+     
+        for cleaned_result in cleaned_results:
+            yield cleaned_result
+
         # ternary operator to append list if current iteration is not on the 1st page
-        temp_result = response if page == 1 else temp_result + response
-        
+        # temp_result = cleaned_result if page == 1 else temp_result + cleaned_result
+
         page += 1
 
-    dump_json(temp_result)
-    print(len(temp_result))
-
-    return
+    return None
 
 # users
 # endpoint = 'users'
 # endpoint = 'users/firdausraginda'
 
 # repo
-endpoint = 'users/firdausraginda/repos'
-endpoint_params = ''
+# endpoint = 'users/firdausraginda/repos'
 
-loop_thru_pages(endpoint)
-
-# dump_json(result)
-# print(len(result))
+# dump_json(loop_thru_pages(endpoint))
+# print(loop_thru_pages(endpoint))
+# loop_thru_pages(endpoint)

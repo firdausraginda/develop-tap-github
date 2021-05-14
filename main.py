@@ -28,26 +28,30 @@ def access_config():
         print("Missing config file: '-c' or '--config")
         sys.exit()
     
-    return config['api_url'], config['username'], config['access_token']
+    return config['base_api_url'], config['username'], config['access_token']
 
 def get_complete_endpoint(endpoint, endpoint_params):
     """define the complete endpoint"""
+
+    # get the base_api_url, username, & token from config.json
+    base_api_url, auth_username, auth_token = access_config()
     
     # emulating switch/case statement
     return {
-        'repos': lambda: 'users/firdausraginda/repos',
-        'branch': lambda: f'repos/firdausraginda/{endpoint_params}/branches'
+        'repos': lambda: f'users/{auth_username}/repos',
+        'branch': lambda: f'repos/{auth_username}/{endpoint_params}/branches',
+        'commit': lambda: f'repos/{auth_username}/{endpoint_params}/commits'
     }.get(endpoint, lambda: None)()
 
 def fetch_data_exception_handling(complete_endpoint, page):
     """error handling when fetching data"""
 
-    # get the api_url, username, & token from config.json
-    api_url, auth_username, auth_token = access_config()
+    # get the base_api_url, username, & token from config.json
+    base_api_url, auth_username, auth_token = access_config()
 
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{api_url}/{complete_endpoint}?page={page}', auth=(auth_username, auth_token)).json()
+        response = requests.get(f'{base_api_url}/{complete_endpoint}?page={page}', auth=(auth_username, auth_token)).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()
@@ -57,22 +61,27 @@ def fetch_data_exception_handling(complete_endpoint, page):
 def fetch_data_from_url(endpoint, endpoint_params, page):
     """fetch data for 1 page"""
 
-    response = fetch_data_exception_handling(get_complete_endpoint(endpoint, endpoint_params), page)
-    
-    # if endpoint == 'repos':
-    #     response = fetch_data_exception_handling(get_complete_endpoint(endpoint), page)
-    # elif endpoint == 'branch':
-    #     response = fetch_data_exception_handling(get_complete_endpoint(endpoint, repos_result['id']), page)
+    # get the base_api_url, username, & token from config.json
+    base_api_url, auth_username, auth_token = access_config()
+
+    # try to fetch data, terminate program if failed
+    try:
+        response = requests.get(f'{base_api_url}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}', auth=(auth_username, auth_token)).json()
+    except RequestException as error:
+        print('an error occured: ', error)
+        sys.exit()
+
+    # response = fetch_data_exception_handling(get_complete_endpoint(endpoint, endpoint_params), page)
 
     return response
 
-def loop_thru_pages(endpoint, endpoint_params=None, page=1):
+def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
     """use function fetch_data_from_url() to loop thru all the pages"""
 
     # loop while page content is not empty
     while len(fetch_data_from_url(endpoint, endpoint_params, page)) > 0:
         response = fetch_data_from_url(endpoint, endpoint_params, page)
-
+        
         # cleaning raw data
         cleaned_results = [clean_pipeline(row, endpoint, endpoint_params) for row in response]
      
@@ -92,8 +101,8 @@ def loop_thru_pages(endpoint, endpoint_params=None, page=1):
 # endpoint = 'users/firdausraginda'
 
 # repo
-# endpoint = 'users/firdausraginda/repos'
+endpoint = 'repos/firdausraginda/basic-airflow/commits'
 
-# dump_json(loop_thru_pages(endpoint))
-# print(loop_thru_pages(endpoint))
-# loop_thru_pages(endpoint)
+# dump_json(fetch_and_clean_thru_pages(endpoint))
+# print(fetch_and_clean_thru_pages(endpoint))
+# fetch_and_clean_thru_pages(endpoint)

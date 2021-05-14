@@ -17,11 +17,12 @@ def clean_pipeline(raw_data, endpoint, endpoint_params):
     # emulating switch/case statement
     return {
         'repos': clean_repo,
-        'branch': clean_branch
+        'branch': clean_branch,
+        'commit': clean_commit,
     }.get(endpoint, lambda: None)(raw_data, endpoint_params)
 
 def clean_repo(raw_data, endpoint_params):
-    """clean repository data"""
+    """cleaning repository data"""
 
     cleaned_dict = {}
     cleaned_dict['id'] = handle_empty_string(raw_data['id'])
@@ -53,7 +54,7 @@ def clean_repo(raw_data, endpoint_params):
     return cleaned_dict
 
 def clean_branch(raw_data, endpoint_params):
-    """clean branch data"""
+    """cleaning branch data"""
 
     cleaned_dict = {}
     cleaned_dict['branch_name'] = handle_empty_string(raw_data['name'])
@@ -61,3 +62,11 @@ def clean_branch(raw_data, endpoint_params):
 
     return cleaned_dict
 
+def clean_commit(raw_data, endpoint_params):
+    """cleaning commit data"""
+
+    cleaned_dict = {}
+    cleaned_dict['url'] = handle_empty_string(raw_data['url'])
+    cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
+
+    return cleaned_dict

@@ -1,4 +1,4 @@
-from main import loop_thru_pages
+from main import fetch_and_clean_thru_pages
 import singer
 
 # define schema
@@ -35,7 +35,7 @@ schema = {
 singer.write_schema('repository', schema, ['id', 'owner_id'])
 
 # write records
-for result_data in loop_thru_pages('repos'):
+for result_data in fetch_and_clean_thru_pages('repos'):
     singer.write_records('repository', [
         {
             'id': result_data['id'],

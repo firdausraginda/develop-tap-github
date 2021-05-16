@@ -1,20 +1,28 @@
 import sys
 
 def flatten_nested_dict(prefix, nested_dict):
+    """flatenning 1 level of nested dictionary"""
+
     cleaned_nested_dict = {}
     cleaned_nested_dict = {f'{prefix}_{key}': val for key,val in nested_dict.items()}
     
     return cleaned_nested_dict
 
 def handle_empty_string(item):
+    """set empty string to null value"""
+
     convert_to_string = str(item)
 
     return None if len(convert_to_string.strip()) == 0 or convert_to_string == 'None' else convert_to_string.strip()
 
 def handle_empty_list(item):
+    """set empty list to null value"""
+
     return None if len(item) == 0 else item
 
 def handle_error_cleaning_pipeline(raw_data, endpoint, endpoint_params):
+    """use try & except to handle error while cleaning data"""
+
     try:
         result = clean_pipeline(raw_data, endpoint, endpoint_params)
     except Exception as e:
@@ -25,7 +33,7 @@ def handle_error_cleaning_pipeline(raw_data, endpoint, endpoint_params):
     return result
 
 def clean_pipeline(raw_data, endpoint, endpoint_params):
-    """select function based on data endpoint"""
+    """mapped function based on data endpoint"""
 
     # emulating switch/case statement
     return {

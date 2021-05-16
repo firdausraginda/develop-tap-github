@@ -84,7 +84,7 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
 # endpoint = 'users/firdausraginda'
 
 # repo
-endpoint = 'repos/firdausraginda/basic-airflow/commits'
+# endpoint = 'repos/firdausraginda/basic-airflow/commits'
 
 # dump_json(fetch_and_clean_thru_pages(endpoint))
 # print(fetch_and_clean_thru_pages(endpoint))

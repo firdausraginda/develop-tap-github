@@ -2,7 +2,6 @@ import requests
 import argparse
 import sys
 import json
-from datetime import timedelta
 from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
 
@@ -58,7 +57,7 @@ def update_state_file(endpoint, row_data):
     if last_updated in row_data:
         if row_data[last_updated] > state_items["bookmarks"][endpoint]['last_updated']:
             with open('state.json', 'w+') as state_file:
-                state_items["bookmarks"][endpoint]['last_updated'] = row_data[last_updated] + datetime.timedelta(seconds=1)
+                state_items["bookmarks"][endpoint]['last_updated'] = row_data[last_updated]
                 state_file.write(json.dumps(state_items))
     
     return None

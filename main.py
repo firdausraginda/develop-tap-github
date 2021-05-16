@@ -34,18 +34,30 @@ def access_config_and_state():
     return config, state
 
 
+def update_state(endpoint, row_data):
+
+    # retrieve state items from state.json
+    _, state_items = access_config_and_state()
+
+    if 'committer_date' in row_data:
+        with open('state.json', 'w+') as state_file:
+            state_items["bookmarks"][endpoint]['last_updated_at'] = row_data['committer_date']
+            state_file.write(json.dumps(state_items))
+    
+    return None
+
+
 def get_query_parameter(endpoint):
     """define the query parameter per endpoint"""
 
-    # get the committer_date from state.json
+    # retrieve state items from state.json
     _, state_items = access_config_and_state()
-    page = 1
 
     # emulating switch/case statement
     return {
         'repositories': lambda: '',
         'branches': lambda: '',
-        'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["committer_date"]}'
+        'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["last_updated_at"]}'
     }.get(endpoint, lambda: None)()
 
 
@@ -93,6 +105,7 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
 
         # yield the cleaned data per API page
         for cleaned_result in cleaned_results:
+            # update_state(endpoint, cleaned_result)
             yield cleaned_result
 
         # ternary operator to append list if current iteration is not on the 1st page

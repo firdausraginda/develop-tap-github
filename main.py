@@ -125,7 +125,7 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         # loop for every row in page
         for cleaned_result in cleaned_results:
 
-            # update the state.json file to get the latest updated date
+            # update the state.json file to get the latest updated date if this is not the initial extraction
             None if config_items["is_initial_extraction"] == True else update_state_file(endpoint, cleaned_result)
 
             # yield the cleaned data per API page

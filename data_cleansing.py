@@ -1,3 +1,5 @@
+import sys
+
 def flatten_nested_dict(prefix, nested_dict):
     
     cleaned_nested_dict = {}
@@ -10,6 +12,15 @@ def flatten_nested_dict(prefix, nested_dict):
 def handle_empty_string(item):
     string_converted = str(item)
     return None if len(string_converted.strip()) == 0 else string_converted.strip()
+
+def handle_error_cleansing_pipeline(raw_data, endpoint, endpoint_params):
+    try:
+        result = clean_pipeline(raw_data, endpoint, endpoint_params)
+    except Exception as e:
+        print(f'Error! data doesn\'t exist while cleansing proccess running!')
+        sys.exit()
+    
+    return result
 
 def clean_pipeline(raw_data, endpoint, endpoint_params):
     """select function based on data endpoint"""
@@ -25,6 +36,7 @@ def clean_repo(raw_data, endpoint_params):
     """cleaning repository data"""
 
     cleaned_dict = {}
+
     cleaned_dict['id'] = handle_empty_string(raw_data['id'])
     cleaned_dict['repository_name'] = handle_empty_string(raw_data['name'])
     cleaned_dict['is_private'] = raw_data['private']
@@ -57,6 +69,7 @@ def clean_branch(raw_data, endpoint_params):
     """cleaning branch data"""
 
     cleaned_dict = {}
+
     cleaned_dict['branch_name'] = handle_empty_string(raw_data['name'])
     cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
 
@@ -66,6 +79,7 @@ def clean_commit(raw_data, endpoint_params):
     """cleaning commit data"""
 
     cleaned_dict = {}
+
     cleaned_dict['url'] = handle_empty_string(raw_data['url'])
     cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
 

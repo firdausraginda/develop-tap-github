@@ -2,7 +2,7 @@ import requests
 import argparse
 import sys
 import json
-from data_cleansing import clean_pipeline
+from data_cleansing import handle_error_cleansing_pipeline
 from requests.exceptions import RequestException
 
 def dump_json(json_data):
@@ -83,7 +83,7 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         response = fetch_data_from_url(endpoint, endpoint_params, page)
         
         # cleaning raw data
-        cleaned_results = [clean_pipeline(row, endpoint, endpoint_params) for row in response]
+        cleaned_results = [handle_error_cleansing_pipeline(row, endpoint, endpoint_params) for row in response]
      
         # yield the cleaned data per API page
         for cleaned_result in cleaned_results:

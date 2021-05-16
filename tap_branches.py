@@ -18,6 +18,8 @@ schema = {
 # write schema
 singer.write_schema('branches', schema, ['branch_name'])
 
+counter = 0
+
 # write records
 for repos_data in fetch_and_clean_thru_pages('repositories'):
     for branch_data in fetch_and_clean_thru_pages('branches', repos_data['repository_name']):
@@ -32,3 +34,6 @@ for repos_data in fetch_and_clean_thru_pages('repositories'):
                 'protection_required_status_checks_contexts': branch_data['protection_required_status_checks_contexts'],
             }
         ])
+
+        counter += 1
+        print(counter)

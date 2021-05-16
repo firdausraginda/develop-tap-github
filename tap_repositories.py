@@ -32,8 +32,10 @@ schema = {
 # write schema
 singer.write_schema('repositories', schema, ['id', 'owner_id'])
 
+counter = 0
+
 # write records
-for result_data in fetch_and_clean_thru_pages('repositories'):
+for result_data in fetch_and_clean_thru_pages('repositories'): 
     singer.write_records('repositories', [
         {
             'id': result_data['id'],
@@ -61,3 +63,6 @@ for result_data in fetch_and_clean_thru_pages('repositories'):
             'is_archived': result_data['is_archived'],
         }
     ])
+
+    counter += 1
+    print(counter)

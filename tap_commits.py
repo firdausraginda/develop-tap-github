@@ -29,6 +29,8 @@ schema = {
 # write schema
 singer.write_schema('commits', schema, ['url'])
 
+counter = 0
+
 # write records
 for repos_data in fetch_and_clean_thru_pages('repositories'):
     for commit_data in fetch_and_clean_thru_pages('commits', repos_data['repository_name']):
@@ -54,3 +56,6 @@ for repos_data in fetch_and_clean_thru_pages('repositories'):
                 'verification_payload': commit_data['verification_payload'],
             }
         ])
+
+        counter += 1
+        print(counter)

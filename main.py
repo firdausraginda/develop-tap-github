@@ -43,8 +43,8 @@ def get_query_parameter(endpoint):
 
     # emulating switch/case statement
     return {
-        'repositories': lambda: None,
-        'branches': lambda: None,
+        'repositories': lambda: '',
+        'branches': lambda: '',
         'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["committer_date"]}'
     }.get(endpoint, lambda: None)()
 
@@ -71,7 +71,7 @@ def fetch_data_from_url(endpoint, endpoint_params, page):
 
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}',
+        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}{get_query_parameter(endpoint)}',
                                 auth=(config_items["username"], config_items["access_token"])).json()
     except RequestException as error:
         print('an error occured: ', error)
@@ -101,7 +101,6 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         page += 1
 
     return None
-    # return temp_result
 
 
 # dump_json(fetch_and_clean_thru_pages(

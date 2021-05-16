@@ -34,15 +34,31 @@ def access_config_and_state():
     return config, state
 
 
-def update_state(endpoint, row_data):
+def get_last_updated_attribute(endpoint):
+    """get the attribute name in each endpoint data that represent the last_updated timestamp"""
+
+    # emulating switch/case statement
+    return {
+        'repositories': lambda: '',
+        'branches': lambda: '',
+        'commits': lambda: 'committer_date'
+    }.get(endpoint, lambda: None)()
+
+
+def update_state_file(endpoint, row_data):
+    """to update the last_updated attribute value in state.json"""
 
     # retrieve state items from state.json
     _, state_items = access_config_and_state()
 
-    if 'committer_date' in row_data:
-        with open('state.json', 'w+') as state_file:
-            state_items["bookmarks"][endpoint]['last_updated_at'] = row_data['committer_date']
-            state_file.write(json.dumps(state_items))
+    # retrieve last_updated attribute name for selected endpoint
+    last_updated = get_last_updated_attribute(endpoint)
+
+    if last_updated in row_data:
+        if row_data[last_updated] > state_items["bookmarks"][endpoint]['last_updated']:
+            with open('state.json', 'w+') as state_file:
+                state_items["bookmarks"][endpoint]['last_updated'] = row_data[last_updated]
+                state_file.write(json.dumps(state_items))
     
     return None
 
@@ -57,7 +73,7 @@ def get_query_parameter(endpoint):
     return {
         'repositories': lambda: '',
         'branches': lambda: '',
-        'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["last_updated_at"]}'
+        'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["last_updated"]}'
     }.get(endpoint, lambda: None)()
 
 
@@ -95,6 +111,9 @@ def fetch_data_from_url(endpoint, endpoint_params, page):
 def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
     """use function fetch_data_from_url() to loop thru all the pages"""
 
+    # retrieve config items from config.json
+    config_items, _ = access_config_and_state()
+
     # loop while page content is not empty
     while len(fetch_data_from_url(endpoint, endpoint_params, page)) > 0:
         response = fetch_data_from_url(endpoint, endpoint_params, page)
@@ -103,9 +122,13 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         cleaned_results = [handle_error_cleaning_pipeline(
             row, endpoint, endpoint_params) for row in response]
 
-        # yield the cleaned data per API page
+        # loop for every row in page
         for cleaned_result in cleaned_results:
-            # update_state(endpoint, cleaned_result)
+
+            # update the state.json file to get the latest updated date
+            None if config_items["is_initial_extraction"] == True else update_state_file(endpoint, cleaned_result)
+
+            # yield the cleaned data per API page
             yield cleaned_result
 
         # ternary operator to append list if current iteration is not on the 1st page

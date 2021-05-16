@@ -27,12 +27,12 @@ schema = {
 }
 
 # write schema
-singer.write_schema('commit', schema, ['url'])
+singer.write_schema('commits', schema, ['url'])
 
 # write records
-for repos_data in fetch_and_clean_thru_pages('repos'):
-    for commit_data in fetch_and_clean_thru_pages('commit', repos_data['repository_name']):
-        singer.write_records('commit', [
+for repos_data in fetch_and_clean_thru_pages('repositories'):
+    for commit_data in fetch_and_clean_thru_pages('commits', repos_data['repository_name']):
+        singer.write_records('commits', [
             {
                 'url': commit_data['url'],
                 'repository_name': commit_data['repository_name'],

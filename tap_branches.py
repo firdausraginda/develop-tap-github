@@ -16,12 +16,12 @@ schema = {
 }
 
 # write schema
-singer.write_schema('branch', schema, ['branch_name'])
+singer.write_schema('branches', schema, ['branch_name'])
 
 # write records
-for repos_data in fetch_and_clean_thru_pages('repos'):
-    for branch_data in fetch_and_clean_thru_pages('branch', repos_data['repository_name']):
-        singer.write_records('branch', [
+for repos_data in fetch_and_clean_thru_pages('repositories'):
+    for branch_data in fetch_and_clean_thru_pages('branches', repos_data['repository_name']):
+        singer.write_records('branches', [
             {
                 'branch_name': branch_data['branch_name'],
                 'repository_name': branch_data['repository_name'],

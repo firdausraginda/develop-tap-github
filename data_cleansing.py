@@ -37,9 +37,9 @@ def clean_pipeline(raw_data, endpoint, endpoint_params):
 
     # emulating switch/case statement
     return {
-        'repos': clean_repo,
-        'branch': clean_branch,
-        'commit': clean_commit,
+        'repositories': clean_repo,
+        'branches': clean_branch,
+        'commits': clean_commit,
     }.get(endpoint, lambda: None)(raw_data, endpoint_params)
 
 def clean_repo(raw_data, endpoint_params):

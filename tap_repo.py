@@ -7,13 +7,11 @@ schema = {
         'id': {'type': 'string'},
         'repository_name': {'type': 'string'},
         'is_private': {'type': 'boolean'},
-
         'owner_id': {'type': 'string'},
         'owner_name': {'type': 'string'},
         'owner_avatar_url': {'type': 'string'},
         'owner_api_url': {'type': 'string'},
         'owner_html_url': {'type': 'string'},
-
         'api_url': {'type': 'string'},
         'html_url': {'type': 'string'},
         'description': {'type': 'string'},

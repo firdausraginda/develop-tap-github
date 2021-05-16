@@ -2,7 +2,7 @@ import requests
 import argparse
 import sys
 import json
-from data_cleansing import handle_error_cleansing_pipeline
+from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
 
 def dump_json(json_data):
@@ -43,21 +43,6 @@ def get_complete_endpoint(endpoint, endpoint_params):
         'commit': lambda: f'repos/{auth_username}/{endpoint_params}/commits'
     }.get(endpoint, lambda: None)()
 
-def fetch_data_exception_handling(complete_endpoint, page):
-    """error handling when fetching data"""
-
-    # get the base_api_url, username, & token from config.json
-    base_api_url, auth_username, auth_token = access_config()
-
-    # try to fetch data, terminate program if failed
-    try:
-        response = requests.get(f'{base_api_url}/{complete_endpoint}?page={page}', auth=(auth_username, auth_token)).json()
-    except RequestException as error:
-        print('an error occured: ', error)
-        sys.exit()
-    
-    return response
-
 def fetch_data_from_url(endpoint, endpoint_params, page):
     """fetch data for 1 page"""
 
@@ -71,8 +56,6 @@ def fetch_data_from_url(endpoint, endpoint_params, page):
         print('an error occured: ', error)
         sys.exit()
 
-    # response = fetch_data_exception_handling(get_complete_endpoint(endpoint, endpoint_params), page)
-
     return response
 
 def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
@@ -83,7 +66,7 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         response = fetch_data_from_url(endpoint, endpoint_params, page)
         
         # cleaning raw data
-        cleaned_results = [handle_error_cleansing_pipeline(row, endpoint, endpoint_params) for row in response]
+        cleaned_results = [handle_error_cleaning_pipeline(row, endpoint, endpoint_params) for row in response]
      
         # yield the cleaned data per API page
         for cleaned_result in cleaned_results:

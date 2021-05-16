@@ -11,13 +11,18 @@ def flatten_nested_dict(prefix, nested_dict):
 
 def handle_empty_string(item):
     string_converted = str(item)
-    return None if len(string_converted.strip()) == 0 else string_converted.strip()
 
-def handle_error_cleansing_pipeline(raw_data, endpoint, endpoint_params):
+    return None if len(string_converted.strip()) == 0 or string_converted == 'None' else string_converted.strip()
+
+def handle_empty_list(item):
+    return None if len(item) == 0 else item
+
+def handle_error_cleaning_pipeline(raw_data, endpoint, endpoint_params):
     try:
         result = clean_pipeline(raw_data, endpoint, endpoint_params)
     except Exception as e:
         print(f'Error! data doesn\'t exist while cleansing proccess running!')
+        print(e)
         sys.exit()
     
     return result
@@ -47,7 +52,7 @@ def clean_repo(raw_data, endpoint_params):
     cleaned_dict['owner_avatar_url'] = handle_empty_string(owner_nested['owner_avatar_url'])
     cleaned_dict['owner_api_url'] = handle_empty_string(owner_nested['owner_url'])
     cleaned_dict['owner_html_url'] = handle_empty_string(owner_nested['owner_html_url'])
-    cleaned_dict['owner_type'] =handle_empty_string( owner_nested['owner_type'])
+    cleaned_dict['owner_type'] = handle_empty_string( owner_nested['owner_type'])
 
     cleaned_dict['api_url'] = handle_empty_string(raw_data['url'])
     cleaned_dict['html_url'] = handle_empty_string(raw_data['html_url'])
@@ -73,14 +78,50 @@ def clean_branch(raw_data, endpoint_params):
     cleaned_dict['branch_name'] = handle_empty_string(raw_data['name'])
     cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
 
+    commit_nested = flatten_nested_dict(prefix = 'commit', nested_dict = raw_data['commit'])
+    cleaned_dict['commit_url'] = handle_empty_string(commit_nested['commit_url'])
+    cleaned_dict['commit_sha'] = handle_empty_string(commit_nested['commit_sha'])
+
+    cleaned_dict['protected'] = raw_data['protected']
+
+    protection_required_status_checks_nested = flatten_nested_dict(prefix = 'protection_required_status_checks', nested_dict = raw_data['protection']['required_status_checks'])
+    cleaned_dict['protection_required_status_checks_enforcement_level'] = handle_empty_string(protection_required_status_checks_nested['protection_required_status_checks_enforcement_level'])
+    cleaned_dict['protection_required_status_checks_contexts'] = handle_empty_list(protection_required_status_checks_nested['protection_required_status_checks_contexts'])
+
     return cleaned_dict
 
 def clean_commit(raw_data, endpoint_params):
     """cleaning commit data"""
-
+    
     cleaned_dict = {}
 
     cleaned_dict['url'] = handle_empty_string(raw_data['url'])
     cleaned_dict['repository_name'] = handle_empty_string(endpoint_params)
+    cleaned_dict['sha'] = handle_empty_string(raw_data['sha'])
+    cleaned_dict['html_url'] = handle_empty_string(raw_data['html_url'])
+    cleaned_dict['comments_url'] = handle_empty_string(raw_data['comments_url'])
+
+    commit_nested = flatten_nested_dict(prefix = 'commit', nested_dict = raw_data['commit'])
+    cleaned_dict['api_url'] = handle_empty_string(commit_nested['commit_url'])
+    cleaned_dict['message'] = handle_empty_string(commit_nested['commit_message'])
+    cleaned_dict['comment_count'] = commit_nested['commit_comment_count']
+    
+    commit_author_nested = flatten_nested_dict(prefix = 'commit_author', nested_dict = raw_data['commit']['author'])
+    cleaned_dict['author_email'] = handle_empty_string(commit_author_nested['commit_author_email'])
+    cleaned_dict['author_date'] = handle_empty_string(commit_author_nested['commit_author_date'])
+
+    commit_committer_nested = flatten_nested_dict(prefix = 'commit_committer', nested_dict = raw_data['commit']['committer'])
+    cleaned_dict['committer_email'] = handle_empty_string(commit_committer_nested['commit_committer_email'])
+    cleaned_dict['committer_date'] = handle_empty_string(commit_committer_nested['commit_committer_date'])
+
+    commit_tree_nested = flatten_nested_dict(prefix = 'commit_tree', nested_dict = raw_data['commit']['tree'])
+    cleaned_dict['tree_url'] = handle_empty_string(commit_tree_nested['commit_tree_url'])
+    cleaned_dict['tree_sha'] = handle_empty_string(commit_tree_nested['commit_tree_sha'])
+
+    commit_verification_nested = flatten_nested_dict(prefix = 'commit_verification', nested_dict = raw_data['commit']['verification'])
+    cleaned_dict['verification_verified'] = commit_verification_nested['commit_verification_verified']
+    cleaned_dict['verification_reason'] = handle_empty_string(commit_verification_nested['commit_verification_reason'])
+    cleaned_dict['verification_signature'] = handle_empty_string(commit_verification_nested['commit_verification_signature'])
+    cleaned_dict['verification_payload'] = handle_empty_string(commit_verification_nested['commit_verification_payload'])
 
     return cleaned_dict

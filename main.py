@@ -73,7 +73,7 @@ def update_staging_state_file(endpoint, row_data):
     return None
 
 
-def is_initial_extraction(endpoint):
+def check_initial_extraction(endpoint, is_updating_state):
     """to prevent system to extract data from the latest updated date in state.json if this is initial extraction"""
     
     # retrieve config items from config.json
@@ -82,17 +82,17 @@ def is_initial_extraction(endpoint):
     # retrieve state items from state.json
     _, state_items = access_config_and_state()
 
-    return '' if config_items["is_initial_extraction"] == True else f'&since={state_items["bookmarks"][endpoint]["last_updated_final"]}'
+    return '' if config_items["is_initial_extraction"] == True or is_updating_state == False else f'&since={state_items["bookmarks"][endpoint]["last_updated_final"]}'
 
 
-def get_query_parameter(endpoint):
+def get_query_parameter(endpoint, is_updating_state):
     """define the query parameter per endpoint"""
 
     # emulating switch/case statement
     return {
-        'repositories': lambda: is_initial_extraction(endpoint),
+        'repositories': lambda: check_initial_extraction(endpoint, is_updating_state),
         'branches': lambda: '',
-        'commits': lambda: is_initial_extraction(endpoint)
+        'commits': lambda: check_initial_extraction(endpoint, is_updating_state)
     }.get(endpoint, lambda: None)()
 
 
@@ -110,7 +110,7 @@ def get_complete_endpoint(endpoint, endpoint_params):
     }.get(endpoint, lambda: None)()
 
 
-def fetch_data_from_url(endpoint, endpoint_params, page):
+def fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state):
     """fetch data for 1 page"""
 
     # retrieve config items from config.json
@@ -118,7 +118,7 @@ def fetch_data_from_url(endpoint, endpoint_params, page):
 
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}{get_query_parameter(endpoint)}',
+        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}{get_query_parameter(endpoint, is_updating_state)}',
                                 auth=(config_items["username"], config_items["access_token"])).json()
     except RequestException as error:
         print('an error occured: ', error)
@@ -134,8 +134,8 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1, is_updati
     config_items, _ = access_config_and_state()
 
     # loop while page content is not empty
-    while len(fetch_data_from_url(endpoint, endpoint_params, page)) > 0:
-        response = fetch_data_from_url(endpoint, endpoint_params, page)
+    while len(fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state)) > 0:
+        response = fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state)
 
         # cleaning raw data
         cleaned_results = [handle_error_cleaning_pipeline(

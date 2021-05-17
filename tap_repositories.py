@@ -1,4 +1,4 @@
-from main import fetch_and_clean_thru_pages, access_config_and_state, update_final_state_file
+from main import fetch_and_clean_thru_pages, update_final_state_file
 import singer
 
 # define schema
@@ -31,9 +31,6 @@ schema = {
 
 # write schema
 singer.write_schema('repositories', schema, ['id', 'owner_id'])
-
-# retrieve config items from config.json
-config_items, _ = access_config_and_state()
 
 counter = 0
 

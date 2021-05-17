@@ -39,13 +39,23 @@ def get_last_updated_attribute(endpoint):
 
     # emulating switch/case statement
     return {
-        'repositories': lambda: '',
+        'repositories': lambda: 'updated_at',
         'branches': lambda: '',
         'commits': lambda: 'committer_date'
     }.get(endpoint, lambda: None)()
 
 
-def update_state_file(endpoint, row_data):
+def update_final_state_file(endpoint):
+
+    # retrieve state items from state.json
+    _, state_items = access_config_and_state()
+
+    with open('state.json', 'w+') as state_file:
+        state_items["bookmarks"][endpoint]['last_updated_final'] = state_items["bookmarks"][endpoint]['last_updated_staging']
+        state_file.write(json.dumps(state_items))
+
+
+def update_staging_state_file(endpoint, row_data):
     """to update the last_updated attribute value in state.json"""
 
     # retrieve state items from state.json
@@ -55,25 +65,34 @@ def update_state_file(endpoint, row_data):
     last_updated = get_last_updated_attribute(endpoint)
 
     if last_updated in row_data:
-        if row_data[last_updated] > state_items["bookmarks"][endpoint]['last_updated']:
+        if row_data[last_updated] > state_items["bookmarks"][endpoint]['last_updated_staging']:
             with open('state.json', 'w+') as state_file:
-                state_items["bookmarks"][endpoint]['last_updated'] = row_data[last_updated]
+                state_items["bookmarks"][endpoint]['last_updated_staging'] = row_data[last_updated]
                 state_file.write(json.dumps(state_items))
     
     return None
 
 
-def get_query_parameter(endpoint):
-    """define the query parameter per endpoint"""
+def is_initial_extraction(endpoint):
+    """to prevent system to extract data from the latest updated date in state.json if this is initial extraction"""
+    
+    # retrieve config items from config.json
+    config_items, _ = access_config_and_state()
 
     # retrieve state items from state.json
     _, state_items = access_config_and_state()
 
+    return '' if config_items["is_initial_extraction"] == True else f'&since={state_items["bookmarks"][endpoint]["last_updated_final"]}'
+
+
+def get_query_parameter(endpoint):
+    """define the query parameter per endpoint"""
+
     # emulating switch/case statement
     return {
-        'repositories': lambda: '',
+        'repositories': lambda: is_initial_extraction(endpoint),
         'branches': lambda: '',
-        'commits': lambda: f'&since={state_items["bookmarks"]["commits"]["last_updated"]}'
+        'commits': lambda: is_initial_extraction(endpoint)
     }.get(endpoint, lambda: None)()
 
 
@@ -108,7 +127,7 @@ def fetch_data_from_url(endpoint, endpoint_params, page):
     return response
 
 
-def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
+def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1, is_updating_state=True):
     """use function fetch_data_from_url() to loop thru all the pages"""
 
     # retrieve config items from config.json
@@ -125,8 +144,8 @@ def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1):
         # loop for every row in page
         for cleaned_result in cleaned_results:
 
-            # update the state.json file to get the latest updated date if this is not the initial extraction
-            None if config_items["is_initial_extraction"] == True else update_state_file(endpoint, cleaned_result)
+            # update the state.json file to get the latest updated date if this is a parent loop e.g. repositories of commits
+            None if is_updating_state == False else update_staging_state_file(endpoint, cleaned_result)
 
             # yield the cleaned data per API page
             yield cleaned_result

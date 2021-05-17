@@ -1,4 +1,4 @@
-from main import fetch_and_clean_thru_pages
+from main import fetch_and_clean_thru_pages, access_config_and_state, update_final_state_file
 import singer
 
 # define schema
@@ -29,10 +29,13 @@ schema = {
 # write schema
 singer.write_schema('commits', schema, ['url'])
 
+# retrieve config items from config.json
+config_items, _ = access_config_and_state()
+
 counter = 0
 
 # write records
-for repos_data in fetch_and_clean_thru_pages('repositories'):
+for repos_data in fetch_and_clean_thru_pages('repositories', is_updating_state=False):
     for commit_data in fetch_and_clean_thru_pages('commits', repos_data['repository_name']):
         singer.write_records('commits', [
             {
@@ -59,3 +62,6 @@ for repos_data in fetch_and_clean_thru_pages('repositories'):
 
         counter += 1
         print(counter)
+
+# update the last_updated_final in state.json file
+update_final_state_file('commits')

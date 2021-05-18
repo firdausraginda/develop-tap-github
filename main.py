@@ -85,14 +85,14 @@ def check_initial_extraction(endpoint, is_updating_state):
     return '' if config_items["is_initial_extraction"] == True or is_updating_state == False else f'&since={state_items["bookmarks"][endpoint]["last_updated_final"]}'
 
 
-def get_query_parameter(endpoint, is_updating_state):
+def get_query_parameter(endpoint, page, is_updating_state):
     """define the query parameter per endpoint"""
 
     # emulating switch/case statement
     return {
-        'repositories': lambda: check_initial_extraction(endpoint, is_updating_state),
-        'branches': lambda: '',
-        'commits': lambda: check_initial_extraction(endpoint, is_updating_state)
+        'repositories': lambda: f'page={page}{check_initial_extraction(endpoint, is_updating_state)}',
+        'branches': lambda: f'page={page}',
+        'commits': lambda: f'page={page}{check_initial_extraction(endpoint, is_updating_state)}'
     }.get(endpoint, lambda: None)()
 
 
@@ -118,7 +118,7 @@ def fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state):
 
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?page={page}{get_query_parameter(endpoint, is_updating_state)}',
+        response = requests.get(f'{config_items["base_api_url"]}/{get_complete_endpoint(endpoint, endpoint_params)}?{get_query_parameter(endpoint, page, is_updating_state)}',
                                 auth=(config_items["username"], config_items["access_token"])).json()
     except RequestException as error:
         print('an error occured: ', error)

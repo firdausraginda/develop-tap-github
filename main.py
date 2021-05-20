@@ -4,7 +4,8 @@ import sys
 import json
 from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
-
+from datetime import datetime
+from datetime import timedelta
 
 def dump_json(json_data):
     """dump data into a json file"""
@@ -13,6 +14,20 @@ def dump_json(json_data):
         json.dump(json_data, outfile)
 
     return None
+
+def last_updated_date_added_1_second(RFC3339_format):
+    """add 1 second to final last updated date (state.json file)"""
+
+    # standardizing to normal datetime
+    standardized_datetime = datetime.strptime(str(RFC3339_format), "%Y-%m-%dT%H:%M:%SZ")
+
+    # add 1 second
+    added_1_second = standardized_datetime + timedelta(seconds=1)
+
+    # convert back to RFC3339 date format
+    converted_to_is_datetime = datetime.strftime(added_1_second, "%Y-%m-%dT%H:%M:%SZ")
+    
+    return converted_to_is_datetime
 
 
 def access_config_and_state():
@@ -51,7 +66,7 @@ def update_final_state_file(endpoint):
     _, state_items = access_config_and_state()
 
     with open('state.json', 'w+') as state_file:
-        state_items["bookmarks"][endpoint]['last_updated_final'] = state_items["bookmarks"][endpoint]['last_updated_staging']
+        state_items["bookmarks"][endpoint]['last_updated_final'] = last_updated_date_added_1_second(state_items["bookmarks"][endpoint]['last_updated_staging'])
         state_file.write(json.dumps(state_items))
 
 

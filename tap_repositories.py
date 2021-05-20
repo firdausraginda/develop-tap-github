@@ -30,13 +30,13 @@ schema = {
 }
 
 # write schema
-singer.write_schema('repositories', schema, ['id', 'owner_id'])
+singer.write_schema('repository_logs', schema, ['id', 'owner_id'])
 
 counter = 0
 
 # write records
 for result_data in fetch_and_clean_thru_pages('repositories'): 
-    singer.write_records('repositories', [
+    singer.write_records('repository_logs', [
         {
             'id': result_data['id'],
             'repository_name': result_data['repository_name'],

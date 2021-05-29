@@ -1,4 +1,5 @@
-from main import fetch_and_clean_thru_pages, update_final_state_file
+from main import fetch_and_clean_thru_pages
+from config_and_state import update_final_state_file
 import singer
 
 # define schema

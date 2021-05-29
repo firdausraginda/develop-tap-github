@@ -4,9 +4,8 @@ import sys
 import json
 from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
-from datetime import datetime
-from datetime import timedelta
 from config_and_state import get_config_item, get_state_item, update_staging_state_file
+from urllib.parse import urljoin
 
 
 def dump_json(json_data):
@@ -49,10 +48,15 @@ def get_complete_endpoint(endpoint, endpoint_params):
 def fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state):
     """fetch data for 1 page"""
 
+    # set the auth
+    auth = get_config_item("username"), get_config_item("access_token")
+
+    # join between base url, endpoint path, & query parameter
+    complete_url = urljoin(get_config_item("base_api_url"), f'/{get_complete_endpoint(endpoint, endpoint_params)}?{get_query_parameter(endpoint, page, is_updating_state)}')
+
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(f'{get_config_item("base_api_url")}/{get_complete_endpoint(endpoint, endpoint_params)}?{get_query_parameter(endpoint, page, is_updating_state)}',
-                                auth=(get_config_item("username"), get_config_item("access_token"))).json()
+        response = requests.get(complete_url, auth=auth).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()

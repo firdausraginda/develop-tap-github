@@ -49,6 +49,10 @@ def get_complete_endpoint(endpoint, repository_name):
 def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
     """fetch data for 1 page"""
 
+    headers = {
+        'accept': 'application/vnd.github.v3+json',
+    }
+
     params = {
         'page': page,
         'since': get_since_param_value(endpoint, is_updating_state)
@@ -56,7 +60,8 @@ def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
 
     # try to fetch data, terminate program if failed
     try:
-        response = request_session.get(get_complete_endpoint(endpoint, repository_name), params=params).json()
+        response = request_session.get(get_complete_endpoint(
+            endpoint, repository_name), params=params, headers=headers).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()

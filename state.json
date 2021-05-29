@@ -1,12 +1,1 @@
-{
-    "bookmarks": {
-        "repositories": {
-            "last_updated_staging": "2021-05-01T00:00:00Z",
-            "last_updated_final": "2021-05-01T00:00:00Z"
-        },
-        "commits": {
-            "last_updated_staging": "2021-05-01T00:00:00Z",
-            "last_updated_final": "2021-05-01T00:00:00Z"
-        }
-    }
-}
+{"bookmarks": {"repositories": {"last_updated_staging": "2021-05-29T18:05:34Z", "last_updated_final": "2021-05-29T18:05:35Z"}, "commits": {"last_updated_staging": "2021-05-29T18:05:22Z", "last_updated_final": "2021-05-29T18:05:23Z"}}}

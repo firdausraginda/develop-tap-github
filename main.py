@@ -6,6 +6,7 @@ from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
 from config_and_state import get_config_item, get_state_item, update_staging_state_file
 from urllib.parse import urljoin
+from request_session import request_session
 
 
 def dump_json(json_data):
@@ -20,60 +21,59 @@ def dump_json(json_data):
 def check_initial_extraction(endpoint, is_updating_state):
     """to prevent system to extract data from the latest updated date in state.json if this is initial extraction"""
 
-    return '' if get_config_item("is_initial_extraction") or is_updating_state == False else f'&since={get_state_item(endpoint, "last_updated_final")}'
+    return None if get_config_item("is_initial_extraction") or is_updating_state == False else get_state_item(endpoint, "last_updated_final")
 
 
-def get_query_parameter(endpoint, page, is_updating_state):
+def get_since_param_value(endpoint, is_updating_state):
     """define the query parameter per endpoint"""
 
     # emulating switch/case statement
     return {
-        'repositories': lambda: f'page={page}{check_initial_extraction(endpoint, is_updating_state)}',
-        'branches': lambda: f'page={page}',
-        'commits': lambda: f'page={page}{check_initial_extraction(endpoint, is_updating_state)}'
+        'repositories': lambda: check_initial_extraction(endpoint, is_updating_state),
+        'branches': lambda: None,
+        'commits': lambda: check_initial_extraction(endpoint, is_updating_state)
     }.get(endpoint, lambda: None)()
 
 
-def get_complete_endpoint(endpoint, endpoint_params):
+def get_complete_endpoint(endpoint, repository_name):
     """define the complete endpoint"""
 
     # emulating switch/case statement
     return {
         'repositories': lambda: f'users/{get_config_item("username")}/repos',
-        'branches': lambda: f'repos/{get_config_item("username")}/{endpoint_params}/branches',
-        'commits': lambda: f'repos/{get_config_item("username")}/{endpoint_params}/commits'
+        'branches': lambda: f'repos/{get_config_item("username")}/{repository_name}/branches',
+        'commits': lambda: f'repos/{get_config_item("username")}/{repository_name}/commits'
     }.get(endpoint, lambda: None)()
 
 
-def fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state):
+def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
     """fetch data for 1 page"""
 
-    # set the auth
-    auth = get_config_item("username"), get_config_item("access_token")
-
-    # join between base url, endpoint path, & query parameter
-    complete_url = urljoin(get_config_item("base_api_url"), f'/{get_complete_endpoint(endpoint, endpoint_params)}?{get_query_parameter(endpoint, page, is_updating_state)}')
+    params = {
+        'page': page,
+        'since': get_since_param_value(endpoint, is_updating_state)
+    }
 
     # try to fetch data, terminate program if failed
     try:
-        response = requests.get(complete_url, auth=auth).json()
+        response = request_session.get(get_complete_endpoint(endpoint, repository_name), params=params).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()
     return response
 
 
-def fetch_and_clean_thru_pages(endpoint, endpoint_params=None, page=1, is_updating_state=True):
+def fetch_and_clean_thru_pages(endpoint, repository_name=None, page=1, is_updating_state=True):
     """use function fetch_data_from_url() to loop thru all the pages"""
 
     # loop while page content is not empty
-    while len(fetch_data_from_url(endpoint, endpoint_params, page, is_updating_state)) > 0:
+    while len(fetch_data_from_url(endpoint, repository_name, page, is_updating_state)) > 0:
         response = fetch_data_from_url(
-            endpoint, endpoint_params, page, is_updating_state)
+            endpoint, repository_name, page, is_updating_state)
 
         # cleaning raw data
         cleaned_results = [handle_error_cleaning_pipeline(
-            row, endpoint, endpoint_params) for row in response]
+            row, endpoint, repository_name) for row in response]
 
         # loop for every row in page
         for cleaned_result in cleaned_results:

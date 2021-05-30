@@ -8,11 +8,6 @@ To install pipenv:
 
 `$ pip3 install --user pipenv`
 
-[optional] To create pipfile with or without requirements.txt:
-
-`$ pipenv install`
-
-
 ## 2. Singer-Python
 
 > [Singer.io](https://github.com/singer-io) is an open source standard for moving data between databases, web APIs, files, queues, etc. The Singer spec describes how data extraction scripts called **Taps** and data loading scripts called **Targets** should communicate using a standard JSON-based data format over stdout.
@@ -23,8 +18,7 @@ To install **singer-python**:
 
 `$ pipenv install singer-python`
 
-
-## 3. Creating Script
+## 3. Create Scripts
 
 Detail about every files:
 
@@ -41,7 +35,6 @@ Detail about every files:
 | `config.json` | Contain configuration items needed to run tap, e.g. `access_token`, `username`, etc | [singer config file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#config-file) |
 | `state.json` | Contain **latest updated date** of extracted data to perform **upsert** process | [singer state file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#state-file) |
 
-
 ## 4. Detail about `config.json` & `state.json`
 
 Detail about items in `config.json` file:
@@ -57,9 +50,8 @@ Detail about items in `state.json` file:
 
 | Item | Description | Is Required? | Reference |
 | --- | --- | --- | --- |
-| `last_updated_staging` | Last updated date per data stream, that will continuously updated while the tap is running | **true** | |
-| `last_updated_final` | Last updated date per data stream, that will be updated after the tap stop running | **true** | |
-
+| `last_updated_staging` | Last updated date per data stream, that will continuously updated **while** the tap is running | **true** | |
+| `last_updated_final` | Last updated date per data stream, that will be updated **after** the tap stop running | **true** | |
 
 ## 5. Data Streams
 
@@ -70,7 +62,6 @@ Detail about items in `state.json` file:
 | `branches` | return list of branches for a repository | **false** | `username`, `repository name` | [list branches API docs](https://docs.github.com/en/rest/reference/repos#list-branches)
 
 For data stream that can perform upsert process, must store **last_updated_staging** & **last_updated_final** attribute in `state.json` file.
-
 
 ## 6. Usage
 
@@ -84,3 +75,5 @@ Some arguments are **required** to run a tap file:
 To run a tap file:
 
 `$ pipenv run python <tap-file-name> -c config.json -s state.json`
+
+Make sure you have set the `username` *(github username)* and the `access_token` *([github access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token))* in `config.json` file

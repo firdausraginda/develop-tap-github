@@ -56,7 +56,7 @@ Detail about every script files:
 | `tap_commits.py` | Produce **commit logs** data streams | |
 | `tap_branches.py` | Produce **branches** data streams | |
 | `config.json` | Contain configuration items needed to run tap, e.g. `access_token`, `username`, etc | [singer config file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#config-file) |
-| `state.json` | Contain **latest updated date** of extracted data to perform **upsert** process | [singer state file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#state-file) |
+| `state.json` | Contain **latest updated date** of extracted data | [singer state file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#state-file) |
 
 This is the script flow looks like:
 
@@ -80,7 +80,7 @@ Detail about items in `state.json` file:
 | `last_updated_staging` | Last updated date per data stream, that will continuously updated **while** the tap is running | **true** | |
 | `last_updated_final` | Last updated date per data stream, that will be updated **after** the tap stop running | **true** | |
 
-#### How the **upsert** works:
+#### How the `state.json` works:
 
 `check_initial_extraction()` function in `main.py` file will check the value of `is_initial_extraction` in `config.json`. There are 2 scenarios:
 * If `is_initial_extraction` set to **true**:
@@ -93,10 +93,10 @@ Will **ignore** `state.json` file (fetch data from the very beginning of the tim
 
 ## 5. Data Streams
 
-| Stream Name | Description | Can Perform Upsert Process? | Required Params | Reference |
+| Stream Name | Description | Can fetch data start from certain date? | Required Params | Reference |
 | --- | --- | --- | --- | --- |
 | `repository logs` | return list of repository logs for a user | **true** | `username` | [list repositories for a user API docs](https://docs.github.com/en/rest/reference/repos#list-repositories-for-a-user) |
 | `commit logs` | return list of commit logs for a repository | **true** | `username`, `repository name` | [list commits API docs](https://docs.github.com/en/rest/reference/repos#list-commits) |
 | `branches` | return list of branches for a repository | **false** | `username`, `repository name` | [list branches API docs](https://docs.github.com/en/rest/reference/repos#list-branches)
 
-For data stream that can perform upsert process, must store **last_updated_staging** & **last_updated_final** attribute in `state.json` file.
+For data stream that can fetch data start from certan date, must store **last_updated_staging** & **last_updated_final** attribute in `state.json` file.

@@ -6,23 +6,23 @@ from config_and_state import get_config_item
 
 class RequestSession(Session):
     """Extension of Session to issue requests to GitLab."""
-    def __init__(self, instance_url: str, access_token: str, username: str):
-        self.instance_url = instance_url
+    def __init__(self, base_api: str, access_token: str, username: str):
+        self.base_api = base_api
         self.access_token = access_token
         self.username = username
-        super(RequestSession, self).__init__()
+        Session.__init__(self)
 
     def request(self, method, url, params=None, *args, **kwargs):
-        # Prefix the URL with the appropriate base.
-        url = urljoin(self.instance_url, f'/{url}')
+        # prefix the URL with the appropriate base.
+        url = urljoin(self.base_api, f'/{url}')
 
-        # Inject the access token.
+        # inject the access_token & username
         if params is None:
             params = { 
                 'access_token': self.access_token,
                 'username': self.username
                 }
-        elif isinstance(params, Mapping):
+        elif type(params) == dict:
             if 'access_token' not in params:
                 params['access_token'] = self.access_token
             if 'username' not in params:
@@ -30,7 +30,7 @@ class RequestSession(Session):
         else:
             raise NotImplementedError('params is of unknown type (only dict supported)')
 
-        return super(RequestSession, self).request(method, url, params, *args, **kwargs)
+        return Session.request(self, method, url, params, *args, **kwargs)
 
 request_session = RequestSession(
     get_config_item("base_api_url"),

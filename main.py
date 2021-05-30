@@ -24,7 +24,7 @@ def check_initial_extraction(endpoint, is_updating_state):
     return None if get_config_item("is_initial_extraction") or is_updating_state == False else get_state_item(endpoint, "last_updated_final")
 
 
-def get_since_param_value(endpoint, is_updating_state):
+def get_since_param_pipeline(endpoint, is_updating_state):
     """define the query parameter per endpoint"""
 
     # emulating switch/case statement
@@ -35,7 +35,7 @@ def get_since_param_value(endpoint, is_updating_state):
     }.get(endpoint, lambda: None)()
 
 
-def get_complete_endpoint(endpoint, repository_name):
+def get_complete_endpoint_url(endpoint, repository_name):
     """define the complete endpoint"""
 
     # emulating switch/case statement
@@ -55,13 +55,13 @@ def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
 
     params = {
         'page': page,
-        'since': get_since_param_value(endpoint, is_updating_state)
+        'since': get_since_param_pipeline(endpoint, is_updating_state)
     }
 
     # try to fetch data, terminate program if failed
     try:
-        response = request_session.get(get_complete_endpoint(
-            endpoint, repository_name), params=params, headers=headers).json()
+        response = request_session.get(get_complete_endpoint_url(
+            endpoint, repository_name), headers=headers, params=params).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit()

@@ -36,7 +36,7 @@ def access_config_and_state():
             state = json.load(state_input)
     else:
         print("Missing config or state file")
-        sys.exit()
+        sys.exit(1)
 
     return config, state
 

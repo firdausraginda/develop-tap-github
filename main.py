@@ -2,20 +2,12 @@ import requests
 import argparse
 import sys
 import json
+from additional import dump_json
 from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
 from config_and_state import get_config_item, get_state_item, update_staging_state_file
 from urllib.parse import urljoin
 from request_session import request_session
-
-
-def dump_json(json_data):
-    """dump data into a json file"""
-
-    with open('dummy.json', 'w') as outfile:
-        json.dump(json_data, outfile)
-
-    return None
 
 
 def check_initial_extraction(endpoint, is_updating_state):
@@ -64,7 +56,7 @@ def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
             endpoint, repository_name), headers=headers, params=params).json()
     except RequestException as error:
         print('an error occured: ', error)
-        sys.exit()
+        sys.exit(1)
     return response
 
 
@@ -96,15 +88,3 @@ def fetch_and_clean_thru_pages(endpoint, repository_name=None, page=1, is_updati
         page += 1
 
     return None
-
-
-# dump_json(fetch_and_clean_thru_pages(
-#     'commits', 'extracting-using-singer-spec'))
-
-# dump_json(fetch_and_clean_thru_pages(
-#     'branches', 'extracting-using-singer-spec'))
-
-# dump_json(fetch_and_clean_thru_pages('repositories'))
-
-# print(fetch_and_clean_thru_pages('repositories'))
-# fetch_and_clean_thru_pages('repositories')

@@ -33,7 +33,7 @@ def handle_error_cleaning_pipeline(raw_data, endpoint, endpoint_params):
     except Exception as e:
         print(f'Error! data doesn\'t exist while cleansing proccess running!')
         print(e)
-        sys.exit()
+        sys.exit(1)
 
     return result
 

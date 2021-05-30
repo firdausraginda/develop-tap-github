@@ -56,7 +56,7 @@ Detail about every script files:
 
 This is the script flow looks like:
 
-![flow chart](./flow-chart.jpeg)
+![flow chart](./script-flow.jpeg)
 
 ## 4. Detail about `config.json` & `state.json`
 

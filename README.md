@@ -3,6 +3,10 @@
 ## Usage
 ---
 
+Need to install [singer-python](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#a-python-tap) lib first:
+
+`$ pipenv install singer-python`
+
 Some arguments are **required** to run a tap file:
 
 | Param | Description |

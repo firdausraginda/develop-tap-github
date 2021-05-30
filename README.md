@@ -5,10 +5,13 @@
 > [Pipenv](https://docs.python-guide.org/dev/virtualenvs/) is a new community standard application that combines pip & virtual env, and extends their functionality in a single app.
 
 To install pipenv:
+
 `$ pip3 install --user pipenv`
 
 [optional] To create pipfile with or without requirements.txt:
+
 `$ pipenv install`
+
 
 ## 2. Singer-Python
 
@@ -17,21 +20,27 @@ To install pipenv:
 Can using [singer-python](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#a-python-tap) library to run singer using Python.
 
 To install **singer-python**:
+
 `$ pipenv install singer-python`
 
+
 ## 3. Creating Script
+
+Detail about every files:
+
 | Files | Description | Reference |
 | --- | --- | --- |
-| `main.py` | Is the main file, contain functions to set the URL endpoint and URL params (*other than **access_token** & **username***), then loop thru the whole pages to fetch data. All functions in other files will be called here |  |
-| `request_session.py` | Set the `requests.session` to make the API call faster. Also set the **access_token** and **username** params here | [python request session](https://2.python-requests.org/en/master/api/#request-sessions) |
-| `config_and_state.py` | Contain functions to access items in config.json & state.json | |
-| `data_cleansing.py` | Contain functions to clean data, e.g. select desired attributes, rename attribute, handle null values, flatten nested dictionary | |
-| `additional.py` | Contain additional functions | |
+| `src/main.py` | Is the main file, contain functions to set the URL endpoint and URL params (*other than **access_token** & **username***), then loop thru the whole pages to fetch data. All functions in other files will be called here |  |
+| `src/request_session.py` | Set the `requests.session` to make the API call faster. Also set the **access_token** and **username** params here | [python request session](https://2.python-requests.org/en/master/api/#request-sessions) |
+| `src/config_and_state.py` | Contain functions to access items in config.json & state.json | |
+| `src/data_cleansing.py` | Contain functions to clean data, e.g. select desired attributes, rename attribute, handle null values, flatten nested dictionary | |
+| `src/additional.py` | Contain additional functions | |
 | `tap_repositories.py` | Produce **repository logs** data streams | |
 | `tap_commits.py` | Produce **commit logs** data streams | |
 | `tap_branches.py` | Produce **branches** data streams | |
 | `config.json` | Contain configuration items needed to run tap, e.g. `access_token`, `username`, etc | [singer config file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#config-file) |
 | `state.json` | Contain **latest updated date** of extracted data to perform **upsert** process | [singer state file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#state-file) |
+
 
 ## 4. Detail about `config.json` & `state.json`
 
@@ -51,6 +60,7 @@ Detail about items in `state.json` file:
 | `last_updated_staging` | Last updated date per data stream, that will continuously updated while the tap is running | **true** | |
 | `last_updated_final` | Last updated date per data stream, that will be updated after the tap stop running | **true** | |
 
+
 ## 5. Data Streams
 
 | Stream Name | Description | Can Perform Upsert Process? | Required Params | Reference |
@@ -60,6 +70,7 @@ Detail about items in `state.json` file:
 | `branches` | return list of branches for a repository | **false** | `username`, `repository name` | [list branches API docs](https://docs.github.com/en/rest/reference/repos#list-branches)
 
 For data stream that can perform upsert process, must store **last_updated_staging** & **last_updated_final** attribute in `state.json` file.
+
 
 ## 6. Usage
 

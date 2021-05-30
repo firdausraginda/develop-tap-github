@@ -4,7 +4,7 @@ import sys
 import json
 from requests.exceptions import RequestException
 from urllib.parse import urljoin
-from src.additional import dump_json
+from src.additionals import dump_json
 from src.data_cleansing import handle_error_cleaning_pipeline
 from src.config_and_state import get_config_item, get_state_item, update_staging_state_file
 from src.request_session import request_session

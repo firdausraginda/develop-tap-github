@@ -76,7 +76,7 @@ Detail about items in `state.json` file:
 | `last_updated_staging` | Last updated date per data stream, that will continuously updated **while** the tap is running | **true** | |
 | `last_updated_final` | Last updated date per data stream, that will be updated **after** the tap stop running | **true** | |
 
-#### How `state.json` works:
+#### How the **upsert** works:
 
 `check_initial_extraction()` function in `main.py` file will check the value of `is_initial_extraction` in `config.json`. There are 2 scenarios:
 * If `is_initial_extraction` set to **true**:

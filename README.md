@@ -14,7 +14,7 @@ To run a tap file:
 
 `$ pipenv run python <tap-file-name> -c config.json -s state.json`
 
-Make sure you have set the `username` *(github username)* and the `access_token` *([github access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token))* in `config.json` file
+Make sure you have set the `username` *(github username)* and the `access_token` *([github access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token))* in `config.json` file.
 
 ## How To Develop a Tap *(github tap in this case)*
 ---
@@ -31,7 +31,7 @@ To install pipenv:
 
 > [Singer.io](https://github.com/singer-io) is an open source standard for moving data between databases, web APIs, files, queues, etc. The Singer spec describes how data extraction scripts called **Taps** and data loading scripts called **Targets** should communicate using a standard JSON-based data format over stdout.
 
-Can using [singer-python](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#a-python-tap) library to run singer using Python.
+Can use [singer-python](https://github.com/singer-io/getting-started/blob/master/docs/RUNNING_AND_DEVELOPING.md#a-python-tap) library to run singer using Python.
 
 To install **singer-python**:
 

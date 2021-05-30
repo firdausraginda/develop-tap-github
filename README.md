@@ -20,7 +20,7 @@ To run a tap file:
 
 Make sure you have set the `username` *(github username)* and the `access_token` *([github access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token))* in `config.json` file.
 
-## How To Develop a Tap *(github tap in this case)*
+## How to Develop a Tap *(github tap in this case)*
 ---
 
 ## 1. Pipenv

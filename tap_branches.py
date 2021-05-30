@@ -1,4 +1,4 @@
-from main import fetch_and_clean_thru_pages
+from src.main import fetch_and_clean_thru_pages
 import singer
 
 # define schema

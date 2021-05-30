@@ -2,12 +2,12 @@ import requests
 import argparse
 import sys
 import json
-from additional import dump_json
-from data_cleansing import handle_error_cleaning_pipeline
 from requests.exceptions import RequestException
-from config_and_state import get_config_item, get_state_item, update_staging_state_file
 from urllib.parse import urljoin
-from request_session import request_session
+from src.additional import dump_json
+from src.data_cleansing import handle_error_cleaning_pipeline
+from src.config_and_state import get_config_item, get_state_item, update_staging_state_file
+from src.request_session import request_session
 
 
 def check_initial_extraction(endpoint, is_updating_state):

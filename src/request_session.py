@@ -1,8 +1,7 @@
-from collections.abc import Mapping
 from requests import Session
 import sys
 from urllib.parse import urljoin
-from config_and_state import get_config_item
+from src.config_and_state import get_config_item
 
 class RequestSession(Session):
     """Extension of Session to issue requests to GitLab."""
@@ -13,7 +12,7 @@ class RequestSession(Session):
         Session.__init__(self)
 
     def request(self, method, url, params=None, *args, **kwargs):
-        # prefix the URL with the appropriate base.
+        # prefix the URL with the appropriate base API url
         url = urljoin(self.base_api, f'/{url}')
 
         # inject the access_token & username

@@ -52,9 +52,9 @@ Detail about every script files:
 | `src/config_and_state.py` | Contain functions to access items in config.json & state.json | |
 | `src/data_cleansing.py` | Contain functions to clean data, e.g. select desired attributes, rename attribute, handle null values, flatten nested dictionary | |
 | `src/additionals.py` | Contain additional functions | |
-| `tap_repositories.py` | Produce **repository logs** data streams | |
-| `tap_commits.py` | Produce **commit logs** data streams | |
-| `tap_branches.py` | Produce **branches** data streams | |
+| `tap_repositories.py` | Produce **repository logs** data streams | [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) |
+| `tap_commits.py` | Produce **commit logs** data streams | [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) |
+| `tap_branches.py` | Produce **branches** data streams | [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) |
 | `config.json` | Contain configuration items needed to run tap, e.g. `access_token`, `username`, etc | [singer config file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#config-file) |
 | `state.json` | Contain **latest updated date** of extracted data | [singer state file docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md#state-file) |
 

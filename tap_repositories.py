@@ -15,7 +15,7 @@ schema = {
         'owner_html_url': {'type': 'string'},
         'api_url': {'type': 'string'},
         'html_url': {'type': 'string'},
-        'description': {'type': 'string'},
+        'description': {'type': ['string', 'null']},
         'created_at': {'type': 'string', 'format': 'date-time'},
         'updated_at': {'type': 'string', 'format': 'date-time'},
         'pushed_at': {'type': 'string', 'format': 'date-time'},

@@ -21,8 +21,8 @@ schema = {
         'tree_sha': {'type': 'string'},
         'verification_verified': {'type': 'boolean'},
         'verification_reason': {'type': 'string'},
-        'verification_signature': {'type': 'string'},
-        'verification_payload': {'type': 'string'},
+        'verification_signature': {'type': ['string', 'null']},
+        'verification_payload': {'type': ['string', 'null']},
     },
     'required': ['url']
 }

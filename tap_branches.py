@@ -8,9 +8,9 @@ schema = {
         'repository_name': {'type': 'string'},
         'commit_url': {'type': 'string'},
         'commit_sha': {'type': 'string'},
-        'protected': {'type': 'string'},
+        'protected': {'type': 'boolean'},
         'protection_required_status_checks_enforcement_level': {'type': 'string'},
-        'protection_required_status_checks_contexts': {'type': 'string'},
+        'protection_required_status_checks_contexts': {'type': ['string', 'null']},
     },
     'required': ['branch_name']
 }

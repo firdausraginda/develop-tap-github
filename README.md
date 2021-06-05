@@ -47,9 +47,9 @@ Detail about every script files:
 
 | Files | Description | Reference |
 | --- | --- | --- |
-| `src/main.py` | Is the main file, contain functions to set the URL endpoint and URL params (*other than **access_token** & **username***), then loop thru the whole pages to fetch data. All functions in other files will be called here |  |
-| `src/request_session.py` | Set the `requests.session` to make the API call faster. Also set the **access_token** and **username** params here | [python request session](https://2.python-requests.org/en/master/api/#request-sessions) |
-| `src/config_and_state.py` | Contain functions to access items in config.json & state.json | |
+| `src/main.py` | Is the main file, contain functions to set the **URL endpoint**, **auth**, **headers**, & **params**, then loop thru the whole pages to fetch data. All functions in other files will be called here |  |
+| `src/request_session.py` | Currently **unused**, can set the **headers**, **params**, & **url** in `main.py` file for now. Originally setting the **requests.session**, **access_token**, and **username** params here | [python request session](https://2.python-requests.org/en/master/api/#request-sessions) |
+| `src/config_and_state.py` | Contain functions to access items in `config.json` & `state.json` | |
 | `src/data_cleansing.py` | Contain functions to clean data, e.g. select desired attributes, rename attribute, handle null values, flatten nested dictionary | |
 | `src/additionals.py` | Contain additional functions | |
 | `tap_repositories.py` | Produce **repository logs** data streams | [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) |
@@ -70,7 +70,8 @@ Detail about items in `config.json` file:
 | --- | --- | --- | --- |
 | `base_api_url` | Is the base API url from github | **true** | [getting started with github rest API](https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api) |
 | `username` | Github username | **true** | |
-| `access_token` | A token that is used in place of a password when performing Git operations over HTTPS with Git on the command line or the API | **true** | [create personal access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) |
+| `access_token` | A token that is used in place of a password when performing Git operations over HTTPS with Git on the command line or the API | **false** | [create personal access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token) |
+| `my_client_id` & `my_client_secret` | A substitue of an `access_token`. Use `my_client_id` & `my_client_secret` to increase rate limit request, but need to register **github app** first |  **true** | *[registering Github app](https://docs.github.com/en/rest/guides/basics-of-authentication), *[OAuth2 key to get more rate limit request](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#oauth2-keysecret) | `my_client_secret` | | **true** | *[registering Github app](https://docs.github.com/en/rest/guides/basics-of-authentication), *[OAuth2 key to increase rate limit request](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#oauth2-keysecret) |
 | `is_initial_extraction` | **true** to fetch data from the very beginning of time, **false** to continue fetch from the latest date | **true** | |
 
 Detail about items in `state.json` file:

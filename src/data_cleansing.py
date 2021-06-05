@@ -104,13 +104,6 @@ def clean_branch(raw_data, endpoint_params):
 
     cleaned_dict['protected'] = raw_data['protected']
 
-    protection_required_status_checks_nested = flatten_nested_dict(
-        'protection_required_status_checks', raw_data['protection']['required_status_checks'])
-    cleaned_dict['protection_required_status_checks_enforcement_level'] = handle_empty_string(
-        protection_required_status_checks_nested['protection_required_status_checks_enforcement_level'])
-    cleaned_dict['protection_required_status_checks_contexts'] = handle_empty_list(
-        protection_required_status_checks_nested['protection_required_status_checks_contexts'])
-
     return cleaned_dict
 
 

@@ -4,10 +4,8 @@ import sys
 import json
 from requests.exceptions import RequestException
 from urllib.parse import urljoin
-from src.additionals import dump_json
 from src.data_cleansing import handle_error_cleaning_pipeline
 from src.config_and_state import get_config_item, get_state_item, update_staging_state_file
-from src.request_session import request_session
 
 
 def check_initial_extraction(endpoint, is_updating_state):
@@ -39,21 +37,33 @@ def get_complete_endpoint_url(endpoint, repository_name):
 
 
 def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
-    """fetch data for 1 page"""
+    """func to set the auth, headers, params, url, & instantiate request session. This func will fetch data in 1 page"""
 
+    # set auth. Can be a substitue of an access_token
+    auth = (get_config_item('my_client_id'), get_config_item('my_client_secret'))
+    
+    # set headers
     headers = {
-        'accept': 'application/vnd.github.v3+json',
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': get_config_item('access_token'),
     }
 
+    # set params
     params = {
+        'username': get_config_item('username'),
         'page': page,
-        'since': get_since_param_pipeline(endpoint, is_updating_state)
+        'since': get_since_param_pipeline(endpoint, is_updating_state),
     }
+
+    # set url
+    url = urljoin(get_config_item('base_api_url'), f'/{get_complete_endpoint_url(endpoint, repository_name)}')
+
+    # instantiate request session
+    session = requests.Session()
 
     # try to fetch data, terminate program if failed
     try:
-        response = request_session.get(get_complete_endpoint_url(
-            endpoint, repository_name), headers=headers, params=params).json()
+        response = session.get(url=url, auth=auth, params=params).json()
     except RequestException as error:
         print('an error occured: ', error)
         sys.exit(1)

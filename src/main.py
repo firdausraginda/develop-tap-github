@@ -71,8 +71,8 @@ def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
         try:
             response = session.get(url=url, auth=auth, params=params).json()
             is_api_calls_succeed = True
-        except RequestException as error:
-            print('an error occured: ', error)
+        except Exception as err:
+            print('an error occured: ', err)
             time.sleep(10)
             # sys.exit(1)
     

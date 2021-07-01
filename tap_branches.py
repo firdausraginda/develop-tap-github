@@ -16,7 +16,7 @@ schema = {
 # write schema
 singer.write_schema('branches', schema, ['branch_name'])
 
-counter = 0
+# counter = 0
 
 # write records
 for repos_data in fetch_and_clean_thru_pages('repositories', is_updating_state=False):
@@ -31,5 +31,5 @@ for repos_data in fetch_and_clean_thru_pages('repositories', is_updating_state=F
             }
         ])
 
-        counter += 1
-        print(counter)
+        # counter += 1
+        # print(counter)

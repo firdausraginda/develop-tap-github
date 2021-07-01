@@ -30,7 +30,7 @@ schema = {
 # write schema
 singer.write_schema('commit_logs', schema, ['url'])
 
-counter = 0
+# counter = 0
 
 # write records
 for repos_data in fetch_and_clean_thru_pages('repositories', is_updating_state=False):
@@ -58,8 +58,8 @@ for repos_data in fetch_and_clean_thru_pages('repositories', is_updating_state=F
             }
         ])
 
-        counter += 1
-        print(counter)
+        # counter += 1
+        # print(counter)
 
 # update the last_updated_final in state.json file
 update_final_state_file('commits')

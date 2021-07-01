@@ -6,7 +6,10 @@ from requests.exceptions import RequestException
 from urllib.parse import urljoin
 from src.data_cleansing import handle_error_cleaning_pipeline
 from src.config_and_state import get_config_item, get_state_item, update_staging_state_file
+import time
+from signal import signal, SIGPIPE, SIG_DFL
 
+signal(SIGPIPE, SIG_DFL)
 
 def check_initial_extraction(endpoint, is_updating_state):
     """to prevent system to extract data from the latest updated date in state.json if this is initial extraction"""
@@ -61,12 +64,18 @@ def fetch_data_from_url(endpoint, repository_name, page, is_updating_state):
     # instantiate request session
     session = requests.Session()
 
-    # try to fetch data, terminate program if failed
-    try:
-        response = session.get(url=url, auth=auth, params=params).json()
-    except RequestException as error:
-        print('an error occured: ', error)
-        sys.exit(1)
+    is_api_calls_succeed = False
+
+    while not is_api_calls_succeed:
+        # try to fetch data, wait for 10s if failed, then try again
+        try:
+            response = session.get(url=url, auth=auth, params=params).json()
+            is_api_calls_succeed = True
+        except RequestException as error:
+            print('an error occured: ', error)
+            time.sleep(10)
+            # sys.exit(1)
+    
     return response
 
 

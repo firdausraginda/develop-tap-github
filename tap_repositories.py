@@ -33,7 +33,7 @@ schema = {
 # write schema
 singer.write_schema('repository_logs', schema, ['id', 'owner_id'])
 
-counter = 0
+# counter = 0
 
 # write records
 for result_data in fetch_and_clean_thru_pages('repositories'): 
@@ -65,8 +65,8 @@ for result_data in fetch_and_clean_thru_pages('repositories'):
         }
     ])
 
-    counter += 1
-    print(counter)
+    # counter += 1
+    # print(counter)
 
 # update the last_updated_final in state.json file
 update_final_state_file('repositories')

@@ -3,6 +3,7 @@ import sys
 import json
 from datetime import datetime
 from datetime import timedelta
+import os
 
 
 def last_updated_date_added_1_second(RFC3339_format):
@@ -67,12 +68,14 @@ def update_final_state_file(endpoint):
     # retrieve state items from state.json
     _, state_items = access_config_and_state()
 
-    last_updated_staging_item = get_state_item(endpoint, 'last_updated_staging')
+    last_updated_staging_item = get_state_item(
+        endpoint, 'last_updated_staging')
 
     path_to_state = os.path.join(os.path.dirname(__file__), '../state.json')
 
     with open(path_to_state, 'w+') as state_file:
-        state_items["bookmarks"][endpoint]['last_updated_final'] = last_updated_date_added_1_second(last_updated_staging_item)
+        state_items["bookmarks"][endpoint]['last_updated_final'] = last_updated_date_added_1_second(
+            last_updated_staging_item)
         state_file.write(json.dumps(state_items))
 
     return None
